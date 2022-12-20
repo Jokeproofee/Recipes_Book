@@ -4,29 +4,48 @@ import org.springframework.stereotype.Service;
 import recipe.recipes_book.recipe_book.model.Recipe;
 import recipe.recipes_book.recipe_book.service.RecipeService;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
-    private final Map<String, Recipe> recipeMap = new LinkedHashMap<>();
+    private final Map<Long, Recipe> recipeMap = new LinkedHashMap<>();
+
+    private static Long id = 1L;
 
     @Override
-    public Recipe addRecipe(String id,Recipe recipe) {
-        if (!recipeMap.containsKey(id)){
-            return recipeMap.put(id,recipe);
-
-        } else {
-            throw new RuntimeException("id уже существует!");
-        }
+    public void addRecipe(Recipe recipe) {
+        recipeMap.put(id++, recipe);
     }
-
     @Override
-    public Recipe getRecipe(String id) {
-        if (recipeMap.containsKey(id)){
-            return recipeMap.get(id);
-        } else {
+    public Recipe getRecipe(Long id) {
+        if (!recipeMap.containsKey(id)) {
             throw new RuntimeException("id не найден!");
         }
+        return recipeMap.get(id);
+    }
+    @Override
+    public void deleteRecipe(Long id) {
+        if (!recipeMap.containsKey(id)) {
+            throw new RuntimeException("id не найден!");
+        }
+        recipeMap.remove(id);
+    }
+    @Override
+    public void editRecipe(Long id, Recipe recipe) {
+        if (!recipeMap.containsKey(id)) {
+            throw new RuntimeException("id не найден!");
+        }
+        recipeMap.put(id, recipe);
+    }
+    @Override
+    public List<Recipe> getAllRecipe() {
+        List<Recipe> s = new ArrayList<>();
+        for (Map.Entry<Long, Recipe> recipeEntry : recipeMap.entrySet()) {
+            s.add(recipeEntry.getValue());
+        }
+        return s;
     }
 }
