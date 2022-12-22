@@ -23,14 +23,14 @@ public class IngredientController {
         return ResponseEntity.ok().body(ingredient);
     }
     @GetMapping
-    public ResponseEntity<String> getAllIngredient() {
+    public ResponseEntity<List<Ingredient>> getAllIngredient() {
         List<Ingredient> ingredientList = ingredientService.getAllIngredient();
-        return ResponseEntity.ok(ingredientList.toString());
+        return ResponseEntity.ok(ingredientList);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<String> getIngredientById(@PathVariable("id") Long id) {
+    public ResponseEntity<Ingredient> getIngredientById(@PathVariable("id") Long id) {
         Ingredient ingredient = ingredientService.getIngredient(id);
-        return ResponseEntity.ok(ingredient.toString());
+        return ResponseEntity.ok(ingredient);
     }
     @PutMapping("/{id}")
     public ResponseEntity<Long> editIngredientById(@PathVariable("id") Long id , @RequestBody Ingredient ingredient) {
