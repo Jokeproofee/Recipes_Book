@@ -1,11 +1,11 @@
 package recipe.recipes_book.recipe_book.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recipe.recipes_book.recipe_book.model.Ingredient;
 import recipe.recipes_book.recipe_book.service.impl.IngredientServiceImpl;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ingredients")
@@ -18,12 +18,28 @@ public class IngredientController {
     }
 
     @PostMapping
-    public Ingredient createIngredient(String id, @RequestBody Ingredient ingredient) {
-        return this.ingredientService.addIngredient(id,ingredient);
+    public ResponseEntity<Ingredient> createIngredient(@RequestBody Ingredient ingredient) {
+        this.ingredientService.addIngredient(ingredient);
+        return ResponseEntity.ok().body(ingredient);
     }
-
+    @GetMapping
+    public ResponseEntity<List<Ingredient>> getAllIngredient() {
+        List<Ingredient> ingredientList = ingredientService.getAllIngredient();
+        return ResponseEntity.ok(ingredientList);
+    }
     @GetMapping("/{id}")
-    public Set<String> getAllIngredients(@PathVariable("id") String id ) {
-        return Collections.singleton(this.ingredientService.getIngredient(id).toString());
+    public ResponseEntity<Ingredient> getIngredientById(@PathVariable("id") Long id) {
+        Ingredient ingredient = ingredientService.getIngredient(id);
+        return ResponseEntity.ok(ingredient);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Long> editIngredientById(@PathVariable("id") Long id , @RequestBody Ingredient ingredient) {
+        ingredientService.editIngredient(id , ingredient);
+        return ResponseEntity.ok(id);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteIngredientById(@PathVariable("id") Long id ) {
+        ingredientService.deleteIngredient(id);
+        return ResponseEntity.ok(id);
     }
 }
