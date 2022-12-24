@@ -46,6 +46,9 @@ public class IngredientServiceImpl implements IngredientService {
         for (Map.Entry<Long, Ingredient> ingredientEntry : ingredientMap.entrySet()) {
             s.add(ingredientEntry.getValue());
         }
+        if (s.size() == 0) {
+            throw new RuntimeException("Книга ингредиентов пуста.");
+        }
         return s;
     }
 }

@@ -46,6 +46,9 @@ public class RecipeServiceImpl implements RecipeService {
         for (Map.Entry<Long, Recipe> recipeEntry : recipeMap.entrySet()) {
             s.add(recipeEntry.getValue());
         }
+        if (s.size() == 0) {
+            throw new RuntimeException("Книга рецептов пуста.");
+        }
         return s;
     }
 }
