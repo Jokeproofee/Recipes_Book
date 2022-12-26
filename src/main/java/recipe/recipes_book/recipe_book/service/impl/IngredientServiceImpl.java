@@ -42,13 +42,10 @@ public class IngredientServiceImpl implements IngredientService {
     }
     @Override
     public List<Ingredient> getAllIngredient() {
-        List<Ingredient> s = new ArrayList<>();
+        List<Ingredient> ingredientList = new ArrayList<>();
         for (Map.Entry<Long, Ingredient> ingredientEntry : ingredientMap.entrySet()) {
-            s.add(ingredientEntry.getValue());
+            ingredientList.add(ingredientEntry.getValue());
         }
-        if (s.size() == 0) {
-            throw new RuntimeException("Книга ингредиентов пуста.");
-        }
-        return s;
+        return ingredientList;
     }
 }

@@ -42,13 +42,10 @@ public class RecipeServiceImpl implements RecipeService {
     }
     @Override
     public List<Recipe> getAllRecipe() {
-        List<Recipe> s = new ArrayList<>();
+        List<Recipe> recipeList = new ArrayList<>();
         for (Map.Entry<Long, Recipe> recipeEntry : recipeMap.entrySet()) {
-            s.add(recipeEntry.getValue());
+            recipeList.add(recipeEntry.getValue());
         }
-        if (s.size() == 0) {
-            throw new RuntimeException("Книга рецептов пуста.");
-        }
-        return s;
+        return recipeList;
     }
 }
