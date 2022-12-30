@@ -3,6 +3,9 @@ package recipe.recipes_book.recipe_book.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import recipe.recipes_book.recipe_book.model.Recipe;
 import recipe.recipes_book.recipe_book.service.FilesService;
@@ -23,7 +26,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
     @PostConstruct
     private void init() {
-        readToFileRecipe();
+        try {
+            readToFileRecipe();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
     @Override
     public void addRecipe(Recipe recipe) {
@@ -62,7 +70,8 @@ public class RecipeServiceImpl implements RecipeService {
     }
     private void saveToFileRecipe() {
         try {
-            String json = new ObjectMapper().writeValueAsString(recipeMap);
+            RecipeFile recipeFile = new RecipeFile(id,recipeMap);
+            String json = new ObjectMapper().writeValueAsString(recipeFile);
             filesService.saveFileRecipe(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -71,10 +80,19 @@ public class RecipeServiceImpl implements RecipeService {
     private void readToFileRecipe() {
         try {
             String json = filesService.readFileRecipe();
-            recipeMap = new ObjectMapper().readValue(json, new TypeReference<>() {
+            RecipeFile recipeFile = new ObjectMapper().readValue(json, new TypeReference<>() {
             });
+            id = recipeFile.getId();
+            recipeMap = recipeFile.getRecipeFileMap();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class RecipeFile {
+        private long id;
+        private TreeMap<Long,Recipe> recipeFileMap;
     }
 }

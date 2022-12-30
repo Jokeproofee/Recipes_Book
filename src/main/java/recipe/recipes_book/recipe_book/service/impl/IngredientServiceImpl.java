@@ -3,6 +3,9 @@ package recipe.recipes_book.recipe_book.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import recipe.recipes_book.recipe_book.model.Ingredient;
 import recipe.recipes_book.recipe_book.service.FilesService;
@@ -23,7 +26,11 @@ public class IngredientServiceImpl implements IngredientService {
     }
     @PostConstruct
     private void init() {
-        readToFileIngredient();
+        try {
+            readToFileIngredient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     @Override
     public void addIngredient(Ingredient ingredient) {
@@ -62,7 +69,8 @@ public class IngredientServiceImpl implements IngredientService {
     }
     private void saveToFileIngredient() {
         try {
-            String json = new ObjectMapper().writeValueAsString(ingredientMap);
+            IngredientFile ingredientFile = new IngredientFile(id,ingredientMap);
+            String json = new ObjectMapper().writeValueAsString(ingredientFile);
             filesService.saveFileIngredient(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -71,9 +79,19 @@ public class IngredientServiceImpl implements IngredientService {
     private void readToFileIngredient() {
         try {
             String json = filesService.readFileIngredient();
-            ingredientMap = new ObjectMapper().readValue(json, new TypeReference<>(){});
+            IngredientFile ingredientFile = new ObjectMapper().readValue(json, new TypeReference<>() {
+            });
+            id = ingredientFile.getId();
+            ingredientMap = ingredientFile.getIngredientFileMap();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class IngredientFile {
+        private long id;
+        private TreeMap<Long, Ingredient> ingredientFileMap;
     }
 }
