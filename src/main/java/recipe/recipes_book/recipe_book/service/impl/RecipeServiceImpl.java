@@ -3,13 +3,14 @@ package recipe.recipes_book.recipe_book.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import recipe.recipes_book.recipe_book.model.Recipe;
 import recipe.recipes_book.recipe_book.service.FilesService;
 import recipe.recipes_book.recipe_book.service.RecipeService;
+import recipe.recipes_book.recipe_book.service.files.RecipeFile;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -35,30 +36,39 @@ public class RecipeServiceImpl implements RecipeService {
     }
     @Override
     public void addRecipe(Recipe recipe) {
+        checkRecipe(recipe);
         recipeMap.put(id++, recipe);
         saveToFileRecipe();
     }
     @Override
     public Recipe getRecipe(Long id) {
-        if (!recipeMap.containsKey(id)) {
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
         return recipeMap.get(id);
     }
     @Override
     public void deleteRecipe(Long id) {
-        if (!recipeMap.containsKey(id)) {
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
         recipeMap.remove(id);
     }
     @Override
     public void editRecipe(Long id, Recipe recipe) {
-        if (!recipeMap.containsKey(id)) {
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
+        checkRecipe(recipe);
         recipeMap.put(id, recipe);
         saveToFileRecipe();
+    }
+    private void checkId(Long id) {
+        if (!recipeMap.containsKey(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не найден!");
+        }
+    }
+    private void checkRecipe(Recipe recipe) {
+        if (StringUtils.isBlank(recipe.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Название рецепта должно быть заполнено!");
+        }
+        if (recipe.getCookingTime() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите время приготовления корректно!");
+        }
     }
     @Override
     public List<Recipe> getAllRecipe() {
@@ -87,12 +97,5 @@ public class RecipeServiceImpl implements RecipeService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-    }
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private static class RecipeFile {
-        private long id;
-        private TreeMap<Long,Recipe> recipeFileMap;
     }
 }

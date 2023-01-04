@@ -3,13 +3,14 @@ package recipe.recipes_book.recipe_book.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import recipe.recipes_book.recipe_book.model.Ingredient;
 import recipe.recipes_book.recipe_book.service.FilesService;
 import recipe.recipes_book.recipe_book.service.IngredientService;
+import recipe.recipes_book.recipe_book.service.files.IngredientFile;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -34,30 +35,42 @@ public class IngredientServiceImpl implements IngredientService {
     }
     @Override
     public void addIngredient(Ingredient ingredient) {
+        checkIngredient(ingredient);
         ingredientMap.put(id++,ingredient);
         saveToFileIngredient();
     }
     @Override
     public Ingredient getIngredient(Long id) {
-        if (!ingredientMap.containsKey(id)){
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
         return ingredientMap.get(id);
     }
     @Override
     public void deleteIngredient(Long id) {
-        if (!ingredientMap.containsKey(id)) {
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
         ingredientMap.remove(id);
     }
     @Override
     public void editIngredient(Long id, Ingredient ingredient) {
-        if (!ingredientMap.containsKey(id)) {
-            throw new RuntimeException("id не найден!");
-        }
+        checkId(id);
+        checkIngredient(ingredient);
         ingredientMap.put(id,ingredient);
         saveToFileIngredient();
+    }
+    private void checkId(Long id) {
+        if (!ingredientMap.containsKey(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не найден!");
+        }
+    }
+    private void checkIngredient(Ingredient ingredient) {
+        if (StringUtils.isBlank(ingredient.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Название ингредиента должно быть заполнено!");
+        }
+        if (ingredient.getWeight() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите вес/количество корректно!");
+        }
+        if (StringUtils.isBlank(ingredient.getMeasureUnit())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Единица измерения должна быть указана!");
+        }
     }
     @Override
     public List<Ingredient> getAllIngredient() {
@@ -86,12 +99,5 @@ public class IngredientServiceImpl implements IngredientService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-    }
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private static class IngredientFile {
-        private long id;
-        private TreeMap<Long, Ingredient> ingredientFileMap;
     }
 }

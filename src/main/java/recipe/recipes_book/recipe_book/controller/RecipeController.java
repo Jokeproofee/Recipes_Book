@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recipe.recipes_book.recipe_book.model.Recipe;
@@ -50,11 +49,8 @@ public class RecipeController {
             }
     )
     public ResponseEntity<?> createRecipe(@RequestBody Recipe recipe) {
-        if (StringUtils.isBlank(recipe.getName())) {
-            return ResponseEntity.badRequest().body("Название рецепта должно быть заполнено!");
-        }
         this.recipeService.addRecipe(recipe);
-        return ResponseEntity.ok().body(recipe);
+        return ResponseEntity.ok(recipe);
     }
 
     @GetMapping
@@ -137,9 +133,6 @@ public class RecipeController {
             }
     )
     public ResponseEntity<?> editRecipeById(@PathVariable("id") Long id, @RequestBody Recipe recipe) {
-        if (StringUtils.isBlank(recipe.getName())) {
-            return ResponseEntity.badRequest().body("Название рецепта должно быть заполнено!");
-        }
         recipeService.editRecipe(id, recipe);
         return ResponseEntity.ok(id);
     }
