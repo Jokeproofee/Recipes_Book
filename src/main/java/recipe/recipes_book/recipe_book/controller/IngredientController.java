@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ingredients")
-@Tag(name = "Ингредиенты.",description = "CRUD- методы для работы с ингредиентами.")
+@Tag(name = "Ингредиенты.", description = "CRUD- методы для работы с ингредиентами.")
 public class IngredientController {
 
     private final IngredientServiceImpl ingredientService;
@@ -52,6 +52,7 @@ public class IngredientController {
         this.ingredientService.addIngredient(ingredient);
         return ResponseEntity.ok(ingredient);
     }
+
     @GetMapping
     @Operation(
             summary = "Получение всех ингредиентов.",
@@ -79,6 +80,7 @@ public class IngredientController {
         List<Ingredient> ingredientList = ingredientService.getAllIngredient();
         return ResponseEntity.ok(ingredientList);
     }
+
     @GetMapping("/{id}")
     @Operation(
             summary = "Получение ингредиента по id.",
@@ -106,6 +108,7 @@ public class IngredientController {
         Ingredient ingredient = ingredientService.getIngredient(id);
         return ResponseEntity.ok(ingredient);
     }
+
     @PutMapping("/{id}")
     @Operation(
             summary = "Изменение ингредиента по id.",
@@ -129,10 +132,11 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<?> editIngredientById(@PathVariable("id") Long id , @RequestBody Ingredient ingredient) {
-        ingredientService.editIngredient(id , ingredient);
+    public ResponseEntity<?> editIngredientById(@PathVariable("id") Long id, @RequestBody Ingredient ingredient) {
+        ingredientService.editIngredient(id, ingredient);
         return ResponseEntity.ok(id);
     }
+
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Удание ингредиента по id.",
@@ -156,7 +160,7 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<Long> deleteIngredientById(@PathVariable("id") Long id ) {
+    public ResponseEntity<Long> deleteIngredientById(@PathVariable("id") Long id) {
         ingredientService.deleteIngredient(id);
         return ResponseEntity.ok(id);
     }

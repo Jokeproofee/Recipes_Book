@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 
 public interface FilesService {
     void saveFileRecipe(String json);
@@ -25,4 +26,6 @@ public interface FilesService {
     ResponseEntity<Void> uploadRecipe(MultipartFile file);
 
     ResponseEntity<Void> uploadIngredient(MultipartFile file);
+
+    Path createTempFile(String suffix);
 }
