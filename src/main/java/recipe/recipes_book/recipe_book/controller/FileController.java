@@ -10,22 +10,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import recipe.recipes_book.recipe_book.service.FilesService;
+import recipe.recipes_book.recipe_book.service.RecipeService;
 
 import java.io.*;
 
 @RestController
 @RequestMapping("/file")
-@Tag(name = "Файлы.",description = "Методы для работы с файлами.")
+@Tag(name = "Файлы.", description = "Методы для работы с файлами.")
 public class FileController {
     private final FilesService filesService;
+    private final RecipeService recipeService;
 
-    public FileController(FilesService filesService) {
+    public FileController(FilesService filesService, RecipeService recipeService) {
         this.filesService = filesService;
+        this.recipeService = recipeService;
     }
 
-    @GetMapping("/exportRecipes")
+    @GetMapping("/downloadRecipesTxt")
     @Operation(
-            summary = "Скачать все рецепты.",
+            summary = "Скачать все рецепты в txt.",
+            description = "Метод для скачивания всех рецептов в виде txt-файла."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Файл загружен."
+                    )
+            }
+    )
+    public ResponseEntity<Object> downloadRecipeFileTxt() {
+        return recipeService.downloadRecipeTxt();
+    }
+
+    @GetMapping("/downloadRecipesJson")
+    @Operation(
+            summary = "Скачать все рецепты в json.",
             description = "Метод для скачивания всех рецептов в виде json-файла."
     )
     @ApiResponses(
@@ -39,7 +59,8 @@ public class FileController {
     public ResponseEntity<InputStreamResource> downloadRecipeFile() throws FileNotFoundException {
         return filesService.downloadRecipe();
     }
-    @PostMapping(value = "/importRecipes",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PostMapping(value = "/importRecipes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Замена рецептов.",
             description = "Принимает json-файл с рецептами и заменяет сохраненный на жестком (локальном) диске файл на новый."
@@ -55,7 +76,8 @@ public class FileController {
     public ResponseEntity<Void> uploadRecipeFile(@RequestParam MultipartFile file) {
         return filesService.uploadRecipe(file);
     }
-    @PostMapping(value = "/importIngredients",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PostMapping(value = "/importIngredients", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Замена ингредиентов.",
             description = "Принимает json-файл с ингредиентами и заменяет сохраненный на жестком (локальном) диске файл на новый."

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recipe.recipes_book.recipe_book.model.Ingredient;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ingredients")
-@Tag(name = "Ингредиенты.",description = "CRUD- методы для работы с ингредиентами.")
+@Tag(name = "Ингредиенты.", description = "CRUD- методы для работы с ингредиентами.")
 public class IngredientController {
 
     private final IngredientServiceImpl ingredientService;
@@ -50,12 +49,10 @@ public class IngredientController {
             }
     )
     public ResponseEntity<?> createIngredient(@RequestBody Ingredient ingredient) {
-        if (StringUtils.isBlank(ingredient.getName())) {
-            return ResponseEntity.badRequest().body("Название ингредиента должно быть заполнено!");
-        }
         this.ingredientService.addIngredient(ingredient);
-        return ResponseEntity.ok().body(ingredient);
+        return ResponseEntity.ok(ingredient);
     }
+
     @GetMapping
     @Operation(
             summary = "Получение всех ингредиентов.",
@@ -83,6 +80,7 @@ public class IngredientController {
         List<Ingredient> ingredientList = ingredientService.getAllIngredient();
         return ResponseEntity.ok(ingredientList);
     }
+
     @GetMapping("/{id}")
     @Operation(
             summary = "Получение ингредиента по id.",
@@ -110,6 +108,7 @@ public class IngredientController {
         Ingredient ingredient = ingredientService.getIngredient(id);
         return ResponseEntity.ok(ingredient);
     }
+
     @PutMapping("/{id}")
     @Operation(
             summary = "Изменение ингредиента по id.",
@@ -133,13 +132,11 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<?> editIngredientById(@PathVariable("id") Long id , @RequestBody Ingredient ingredient) {
-        if (StringUtils.isBlank(ingredient.getName())) {
-            return ResponseEntity.badRequest().body("Название ингредиента должно быть заполнено!");
-        }
-        ingredientService.editIngredient(id , ingredient);
+    public ResponseEntity<?> editIngredientById(@PathVariable("id") Long id, @RequestBody Ingredient ingredient) {
+        ingredientService.editIngredient(id, ingredient);
         return ResponseEntity.ok(id);
     }
+
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Удание ингредиента по id.",
@@ -163,7 +160,7 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<Long> deleteIngredientById(@PathVariable("id") Long id ) {
+    public ResponseEntity<Long> deleteIngredientById(@PathVariable("id") Long id) {
         ingredientService.deleteIngredient(id);
         return ResponseEntity.ok(id);
     }
